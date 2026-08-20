@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>คู่มือการใช้งาน | ระบบประวัติผู้ป่วยเทศบาล</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { colors: {
+      navy: { 900: '#0a1f33', 800: '#0f2a44', 700: '#1b3b5f', 600: '#27527f' },
+      teal: { 600: '#0d8f8c', 500: '#14a8a4', 400: '#2cc9c4' },
+      gold: { 600: '#b8901f', 500: '#d4a72c', 400: '#e8c15c' }
+    } } } };
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .step-list { counter-reset: step; }
+    .step-list > li {
+      counter-increment: step;
+      position: relative;
+      padding-left: 2.25rem;
+      margin-bottom: .7rem;
+      line-height: 1.65;
+    }
+    .step-list > li::before {
+      content: counter(step);
+      position: absolute;
+      left: 0;
+      top: .1rem;
+      width: 1.6rem;
+      height: 1.6rem;
+      border-radius: 999px;
+      background: var(--navy-800);
+      color: #fff;
+      font-size: .8rem;
+      font-weight: 700;
+      display: grid;
+      place-items: center;
+    }
+    .admin-only .step-list > li::before { background: var(--gold-600); }
+    h2[id], h3[id] { scroll-margin-top: 6rem; }
+    kbd {
+      background: #eef3f7; border: 1px solid var(--line); border-bottom-width: 2px;
+      border-radius: .35rem; padding: .05rem .4rem; font-size: .85em; font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="app-header"></div>
+
+  <main class="max-w-3xl mx-auto px-3 sm:px-4 py-4 pb-24">
+
+    <h1 class="text-2xl font-bold text-navy-800">คู่มือการใช้งาน</h1>
+    <p class="text-sm text-slate-600 mt-1 mb-4">
+      คู่มือฉบับเต็มของระบบจัดเก็บและค้นหาประวัติผู้ป่วยในเขตเทศบาล
+      แบ่งหัวข้อตามสิทธิ์การใช้งาน เปิดอ่านเฉพาะส่วนที่เกี่ยวกับตัวเองได้เลย
+    </p>
+
+    <!-- สิทธิ์ 2 แบบ -->
+    <section class="card p-4 mb-3">
+      <h2 class="font-bold text-navy-800 mb-3">ระบบนี้มีผู้ใช้ 2 แบบ</h2>
+      <div class="grid gap-3 sm:grid-cols-2">
+        <div class="rounded-xl border border-slate-200 p-3 bg-slate-50">
+          <span class="badge badge-general">เจ้าหน้าที่ (staff)</span>
+          <p class="text-sm text-slate-600 mt-2 leading-relaxed">
+            ค้นหา ดูประวัติผู้ป่วย และกดปุ่มนำทางไปบ้านผู้ป่วยได้<br />
+            <strong class="text-navy-800">แก้ไขหรือลบข้อมูลไม่ได้</strong>
+          </p>
+        </div>
+        <div class="rounded-xl border border-amber-200 p-3" style="background:rgba(212,167,44,.09)">
+          <span class="badge badge-role">ผู้ดูแลระบบ (admin)</span>
+          <p class="text-sm text-slate-600 mt-2 leading-relaxed">
+            ทำได้ทุกอย่างที่เจ้าหน้าที่ทำได้ <strong class="text-navy-800">บวกกับ</strong>
+            เพิ่ม แก้ไข ลบ กู้คืนผู้ป่วย และตั้งค่าระบบ
+          </p>
+        </div>
+      </div>
+      <p class="text-xs text-slate-500 mt-3">
+        ถ้าไม่แน่ใจว่าตัวเองเป็นแบบไหน ให้ดูป้ายสีข้างชื่อผู้ใช้ที่มุมขวาบนของทุกหน้า
+      </p>
+    </section>
+
+    <!-- สารบัญ -->
+    <section class="card p-4 mb-4">
+      <h2 class="font-bold text-navy-800 mb-2">สารบัญ</h2>
+      <div class="grid sm:grid-cols-2 gap-x-4 gap-y-1 text-sm">
+        <a href="#s1" class="text-teal-600 font-semibold py-1 block">ส่วนที่ 1 — ใช้ร่วมกันทุกคน</a>
+        <span></span>
+        <a href="#s1-1" class="text-slate-600 py-1 block pl-3">1.1 เข้าสู่ระบบ / ออกจากระบบ</a>
+        <a href="#s1-2" class="text-slate-600 py-1 block pl-3">1.2 ค้นหาและกรองผู้ป่วย</a>
+        <a href="#s1-3" class="text-slate-600 py-1 block pl-3">1.3 ดูประวัติผู้ป่วย</a>
+        <a href="#s1-4" class="text-slate-600 py-1 block pl-3">1.4 ปุ่มนำทางไปบ้านผู้ป่วย</a>
+        <a href="#s2" class="text-gold-600 font-semibold py-1 block mt-1">ส่วนที่ 2 — เฉพาะผู้ดูแลระบบ</a>
+        <span></span>
+        <a href="#s2-1" class="text-slate-600 py-1 block pl-3">2.1 เพิ่มผู้ป่วยรายใหม่</a>
+        <a href="#s2-2" class="text-slate-600 py-1 block pl-3">2.2 แก้ไขข้อมูลผู้ป่วย</a>
+        <a href="#s2-3" class="text-slate-600 py-1 block pl-3">2.3 ลบผู้ป่วย</a>
+        <a href="#s2-4" class="text-slate-600 py-1 block pl-3">2.4 กู้คืนจากถังขยะ</a>
+        <a href="#s2-5" class="text-slate-600 py-1 block pl-3">2.5 ตั้งค่าระบบ</a>
+        <a href="#s2-6" class="text-slate-600 py-1 block pl-3">2.6 จัดการบัญชีผู้ใช้</a>
+        <a href="#s3" class="text-teal-600 font-semibold py-1 block mt-1">ส่วนที่ 3 — วิธีหาพิกัดจาก Google Maps</a>
+        <a href="#s4" class="text-teal-600 font-semibold py-1 block mt-1">ส่วนที่ 4 — แก้ปัญหาที่พบบ่อย</a>
+      </div>
+    </section>
+
+    <!-- ================= ส่วนที่ 1 ================= -->
+    <h2 id="s1" class="text-lg font-bold text-white bg-navy-800 rounded-xl px-4 py-2.5 mb-3">
+      ส่วนที่ 1 — ใช้ร่วมกันทุกคน (เจ้าหน้าที่ และ ผู้ดูแลระบบ)
+    </h2>
+
+    <section class="card p-4 mb-3">
+      <h3 id="s1-1" class="font-bold text-navy-800 mb-3">1.1 เข้าสู่ระบบ / ออกจากระบบ</h3>
+      <ol class="step-list text-sm text-slate-600">
+        <li>เปิดเว็บของระบบ จะเข้าหน้า <strong>"เข้าสู่ระบบ"</strong> ก่อนเสมอ</li>
+        <li>กรอก <strong>ชื่อผู้ใช้</strong> และ <strong>รหัสผ่าน</strong> ที่ผู้ดูแลระบบให้มา
+            (ถ้าอยากตรวจว่าพิมพ์รหัสถูกไหม กดปุ่ม <kbd>แสดง</kbd> ในช่องรหัสผ่านได้)</li>
+        <li>กดปุ่ม <strong>"เข้าสู่ระบบ"</strong> ถ้าถูกต้องจะเข้าหน้ารายชื่อผู้ป่วยทันที</li>
+        <li>เมื่อใช้งานเสร็จ กดปุ่ม <strong>"ออก"</strong> ที่มุมขวาบน แล้วกดยืนยัน</li>
+      </ol>
+      <div class="alert alert-info text-[13px] mt-3 leading-relaxed">
+        <strong>ควรรู้:</strong> ระบบจะจำการเข้าสู่ระบบไว้เฉพาะในแท็บที่เปิดอยู่เท่านั้น
+        ถ้าปิดเบราว์เซอร์แล้วเปิดใหม่ ต้องล็อกอินใหม่ทุกครั้ง เป็นการป้องกันไม่ให้คนอื่นมาเปิดดูประวัติผู้ป่วยต่อจากเรา
+      </div>
+    </section>
+
+    <section class="card p-4 mb-3">
+      <h3 id="s1-2" class="font-bold text-navy-800 mb-3">1.2 ค้นหาและกรองผู้ป่วย</h3>
+      <ol class="step-list text-sm text-slate-600">
+        <li>เปิดเมนู <strong>"รายชื่อผู้ป่วย"</strong> ด้านบน</li>
+        <li>พิมพ์ <strong>ชื่อ</strong> <strong>นามสกุล</strong> หรือ <strong>รหัสผู้ป่วย</strong> ลงในช่องค้นหา
+            ระบบจะกรองให้เองภายในเสี้ยววินาที <strong>ไม่ต้องกด Enter</strong> และพิมพ์เล็กพิมพ์ใหญ่ไม่มีผล</li>
+        <li>ถ้าอยากดูเฉพาะกลุ่ม กดปุ่ม <strong>"ผู้ป่วยติดเตียง"</strong> หรือ <strong>"ผู้ป่วยทั่วไป"</strong>
+            (กด <strong>"ทั้งหมด"</strong> เพื่อกลับมาดูทุกคน)</li>
+        <li>กดปุ่ม <strong>"ล้าง"</strong> ท้ายช่องค้นหา เพื่อลบคำค้นทิ้ง</li>
+      </ol>
+      <div class="grid sm:grid-cols-2 gap-2 mt-3 text-[13px]">
+        <div class="rounded-lg border border-red-200 bg-red-50 p-2.5">
+          <span class="badge badge-bedridden">ผู้ป่วยติดเตียง</span>
+          <p class="text-slate-600 mt-1.5">การ์ดขอบซ้าย <strong>สีแดง</strong> และจะถูกเรียงขึ้นก่อนเสมอ</p>
+        </div>
+        <div class="rounded-lg border border-teal-200 p-2.5" style="background:#f0fbfa">
+          <span class="badge badge-general">ผู้ป่วยทั่วไป</span>
+          <p class="text-slate-600 mt-1.5">การ์ดขอบซ้าย <strong>สีเขียว</strong></p>
+        </div>
+      </div>
+      <p class="text-xs text-slate-500 mt-3">
+        กล่องสรุปด้านบนสุดบอกจำนวนผู้ป่วยทั้งหมด แยกเป็นติดเตียงกี่คน ทั่วไปกี่คน
+      </p>
+    </section>
+
+    <section class="card p-4 mb-3">
+      <h3 id="s1-3" class="font-bold text-navy-800 mb-3">1.3 ดูประวัติผู้ป่วย</h3>
+      <ol class="step-list text-sm text-slate-600">
+        <li>ที่หน้ารายชื่อ กดที่ <strong>การ์ดของผู้ป่วย</strong> ที่ต้องการ</li>
+        <li>จะเห็นข้อมูลครบ: ที่อยู่ อาการ/โรคประจำตัว เบอร์โทร หมายเหตุ และพิกัด</li>
+        <li>ถ้าผู้ป่วยมีเบอร์โทร กดปุ่ม <strong>"โทรหาผู้ป่วย"</strong> เพื่อโทรออกจากมือถือได้เลย</li>
+        <li>ปุ่ม <strong>"เปิดใน Google Maps"</strong> ใช้ดูว่าบ้านอยู่ตรงไหน (ยังไม่ใช่การนำทาง)</li>
+        <li>กด <strong>"← กลับไปหน้ารายชื่อ"</strong> เพื่อย้อนกลับ</li>
+      </ol>
+      <p class="text-xs text-slate-500 mt-2">
+        ด้านล่างสุดของหน้าจะบอกด้วยว่าข้อมูลนี้ถูกบันทึกเมื่อไหร่ และแก้ไขล่าสุดเมื่อไหร่
+      </p>
+    </section>
+
+    <section class="card p-4 mb-3">
+      <h3 id="s1-4" class="font-bold text-navy-800 mb-3">1.4 ปุ่มนำทางไปบ้านผู้ป่วย</h3>
+      <p class="text-sm text-slate-600 mb-3">นี่คือหัวใจของระบบ ใช้ตอนจะออกเยี่ยมบ้าน</p>
+      <ol class="step-list text-sm text-slate-600">
+        <li>เปิดหน้าประวัติของผู้ป่วยคนที่จะไปเยี่ยม</li>
+        <li>กดปุ่มสีเขียวใหญ่ <strong>"🧭 นำทางจากเทศบาลไปบ้านผู้ป่วย"</strong></li>
+        <li>แอป Google Maps จะเปิดขึ้นพร้อมเส้นทางที่วางไว้ให้แล้ว กด "เริ่ม" ในแอปได้เลย</li>
+      </ol>
+      <div class="alert alert-warn text-[13px] mt-3 leading-relaxed">
+        <strong>จุดสำคัญที่ต้องเข้าใจ:</strong> เส้นทางนี้เริ่มจาก <strong>ที่ตั้งเทศบาลเสมอ</strong>
+        ไม่ใช่จากตำแหน่งที่คุณกำลังยืนอยู่ ระบบออกแบบมาแบบนี้ตั้งใจ เพื่อให้ทุกคนวางแผนการเดินทาง
+        จากจุดตั้งต้นเดียวกัน ถ้าคุณอยู่ที่อื่นและอยากนำทางจากตำแหน่งตัวเอง
+        ให้กดเปลี่ยนจุดเริ่มต้นในแอป Google Maps เอาเองอีกทีหนึ่ง
+      </div>
+      <div class="alert alert-info text-[13px] mt-2 leading-relaxed">
+        <strong>ถ้าผู้ป่วยไม่มีพิกัด</strong> ระบบจะใช้ "ที่อยู่" ที่พิมพ์ไว้ในการค้นหาเส้นทางแทน
+        ซึ่งอาจไม่แม่นเท่าพิกัด แนะนำให้ผู้ดูแลระบบใส่พิกัดให้ครบทุกคน (ดูส่วนที่ 3)
+      </div>
+      <p class="text-[13px] text-slate-500 mt-2">
+        ถ้าปุ่มนำทาง <strong>กดไม่ได้ (เป็นสีจาง)</strong> แปลว่าผู้ป่วยรายนั้นไม่มีทั้งพิกัดและที่อยู่
+        หรือยังไม่ได้ตั้งค่าพิกัดเทศบาล จะมีข้อความสีเหลืองบอกสาเหตุอยู่ใต้ปุ่ม
+      </p>
+    </section>
+
+    <!-- ================= ส่วนที่ 2 ================= -->
+    <div class="admin-only">
+      <h2 id="s2" class="text-lg font-bold rounded-xl px-4 py-2.5 mb-3 flex items-center gap-2 flex-wrap"
+          style="background:var(--gold-500); color:var(--navy-900)">
+        ส่วนที่ 2 — เฉพาะผู้ดูแลระบบ (admin)
+      </h2>
+      <p class="text-[13px] text-slate-600 mb-3 px-1">
+        ถ้าคุณล็อกอินด้วยบัญชีเจ้าหน้าที่ (staff) เมนูในส่วนนี้จะไม่ปรากฏให้เห็น
+        และถ้าพิมพ์ที่อยู่เว็บเข้าไปตรงๆ ระบบจะเด้งกลับมาหน้ารายชื่อพร้อมข้อความแจ้งเตือน
+      </p>
+
+      <section class="card p-4 mb-3">
+        <h3 id="s2-1" class="font-bold text-navy-800 mb-3">2.1 เพิ่มผู้ป่วยรายใหม่</h3>
+        <ol class="step-list text-sm text-slate-600">
+          <li>ที่หน้ารายชื่อ กดปุ่มสีทอง <strong>"＋ เพิ่มผู้ป่วย"</strong> มุมขวาล่าง
+              (หรือเมนู "เพิ่มผู้ป่วย" ด้านบน)</li>
+          <li>กรอกช่องที่มีเครื่องหมาย <span class="required-star font-bold">*</span> ให้ครบ ได้แก่
+              ชื่อ, นามสกุล, ประเภทผู้ป่วย, ที่อยู่ และอาการ/โรคประจำตัว</li>
+          <li>ช่องที่เขียนว่า <em>(ไม่บังคับ)</em> คือ เบอร์โทร หมายเหตุ และพิกัด จะเว้นว่างไว้ก็ได้</li>
+          <li>ถ้ามีลิงก์ Google Maps ของบ้านผู้ป่วย ให้วางในช่องลิงก์แล้วกด
+              <strong>"📍 ดึงพิกัดจากลิงก์"</strong> (วิธีหาลิงก์ดูส่วนที่ 3)</li>
+          <li>กด <strong>"บันทึกข้อมูล"</strong> — ระบบจะออก <strong>รหัสผู้ป่วยให้อัตโนมัติ</strong>
+              เช่น <code class="font-mono">P-2026-0001</code> แล้วพาไปหน้าประวัติที่เพิ่งสร้าง</li>
+        </ol>
+        <div class="alert alert-info text-[13px] mt-3 leading-relaxed">
+          <strong>ถ้ากรอกไม่ครบ</strong> ระบบจะไม่บันทึก แต่จะขึ้นข้อความสีแดงใต้ช่องที่มีปัญหา
+          พร้อมเลื่อนหน้าจอไปที่ช่องแรกที่ผิดให้เอง แก้ตามข้อความแล้วกดบันทึกใหม่ได้เลย
+        </div>
+        <p class="text-xs text-slate-500 mt-2">
+          หมายเหตุที่เป็นประโยชน์เวลาลงพื้นที่ เช่น "ซอยแคบรถใหญ่เข้าไม่ได้" หรือ "มีสุนัขเฝ้าบ้าน"
+          หรือ "ควรโทรนัดก่อน" แนะนำให้ใส่ไว้ในช่องหมายเหตุ
+        </p>
+      </section>
+
+      <section class="card p-4 mb-3">
+        <h3 id="s2-2" class="font-bold text-navy-800 mb-3">2.2 แก้ไขข้อมูลผู้ป่วย</h3>
+        <ol class="step-list text-sm text-slate-600">
+          <li>เปิดหน้าประวัติของผู้ป่วยที่ต้องการแก้</li>
+          <li>กดปุ่ม <strong>"✏️ แก้ไขข้อมูล"</strong> ด้านล่างสุด</li>
+          <li>แก้ช่องที่ต้องการ แล้วกด <strong>"บันทึกข้อมูล"</strong></li>
+        </ol>
+        <p class="text-[13px] text-slate-500 mt-2">
+          <strong>รหัสผู้ป่วยแก้ไม่ได้</strong> และจะไม่เปลี่ยนตลอดอายุการใช้งาน
+          ส่วนวันที่ "แก้ไขล่าสุด" ระบบจะอัปเดตให้เองทุกครั้งที่บันทึก
+        </p>
+      </section>
+
+      <section class="card p-4 mb-3">
+        <h3 id="s2-3" class="font-bold text-navy-800 mb-3">2.3 ลบผู้ป่วย</h3>
+        <ol class="step-list text-sm text-slate-600">
+          <li>เปิดหน้าประวัติของผู้ป่วยที่ต้องการลบ</li>
+          <li>กดปุ่มสีแดง <strong>"🗑️ ลบผู้ป่วย"</strong></li>
+          <li>อ่านชื่อในกล่องยืนยันให้แน่ใจว่าเป็นคนที่ตั้งใจจะลบจริง แล้วกด <strong>"ลบเลย"</strong></li>
+        </ol>
+        <div class="alert alert-success text-[13px] mt-3 leading-relaxed">
+          <strong>ไม่ต้องกลัวลบผิดคน:</strong> การลบในระบบนี้เป็นการ "ย้ายไปถังขยะ" เท่านั้น
+          ข้อมูลจริงยังอยู่ในฐานข้อมูลครบถ้วน และกู้คืนได้ตลอดเวลา
+          ระบบนี้<strong>ไม่มีปุ่มลบถาวร</strong>โดยตั้งใจ
+        </div>
+      </section>
+
+      <section class="card p-4 mb-3">
+        <h3 id="s2-4" class="font-bold text-navy-800 mb-3">2.4 กู้คืนจากถังขยะ</h3>
+        <ol class="step-list text-sm text-slate-600">
+          <li>กดเมนู <strong>"ถังขยะ"</strong> ด้านบน</li>
+          <li>จะเห็นรายชื่อผู้ป่วยที่ถูกลบ พร้อมวันเวลาที่ลบ เรียงจากที่ลบล่าสุดขึ้นก่อน</li>
+          <li>กดปุ่ม <strong>"↩️ กู้คืน"</strong> ข้างชื่อที่ต้องการ</li>
+          <li>ข้อมูลจะกลับไปอยู่ในหน้ารายชื่อผู้ป่วยตามปกติทันที</li>
+        </ol>
+        <p class="text-xs text-slate-500 mt-2">
+          ถ้าถังขยะว่าง จะขึ้นข้อความ "ถังขยะว่างเปล่า" แปลว่ายังไม่เคยมีการลบข้อมูลใคร
+        </p>
+      </section>
+
+      <section class="card p-4 mb-3">
+        <h3 id="s2-5" class="font-bold text-navy-800 mb-3">2.5 ตั้งค่าระบบ</h3>
+        <p class="text-sm text-slate-600 mb-3">
+          หน้านี้ตั้งค่า 2 อย่างที่มีผลกับทั้งระบบ
+        </p>
+        <ol class="step-list text-sm text-slate-600">
+          <li>กดเมนู <strong>"ตั้งค่า"</strong> ด้านบน</li>
+          <li><strong>ชื่อระบบ</strong> — ชื่อที่แสดงบนหัวเว็บและหน้าเข้าสู่ระบบ พิมพ์เปลี่ยนได้ตามต้องการ</li>
+          <li><strong>พิกัดที่ตั้งเทศบาล</strong> — คือจุดเริ่มต้นของการนำทางทุกครั้ง
+              วางลิงก์ Google Maps ของอาคารเทศบาลแล้วกด <strong>"📍 ดึงพิกัดจากลิงก์"</strong>
+              หรือพิมพ์ตัวเลขเองก็ได้</li>
+          <li>กด <strong>"🗺️ ดูจุดเริ่มต้นนี้บนแผนที่"</strong> เพื่อตรวจว่าหมุดตกที่อาคารเทศบาลจริง</li>
+          <li>กด <strong>"บันทึกการตั้งค่า"</strong> — ค่าใหม่มีผลกับทุกคนทันที ไม่ต้องแก้โค้ด</li>
+        </ol>
+        <div class="alert alert-warn text-[13px] mt-3 leading-relaxed">
+          <strong>ตั้งพิกัดเทศบาลให้ถูกตั้งแต่แรก</strong> เพราะถ้าพิกัดนี้ผิด เส้นทางของผู้ป่วย
+          <strong>ทุกคน</strong>จะเริ่มจากจุดที่ผิดไปด้วยทั้งหมด
+        </div>
+      </section>
+
+      <section class="card p-4 mb-3">
+        <h3 id="s2-6" class="font-bold text-navy-800 mb-3">2.6 จัดการบัญชีผู้ใช้</h3>
+        <p class="text-sm text-slate-600 mb-3 leading-relaxed">
+          การเพิ่มผู้ใช้ เปลี่ยนรหัสผ่าน หรือปิดบัญชี ทำที่ <strong>Google Sheet</strong> โดยตรง
+          (ไม่มีหน้าจัดการผู้ใช้ในเว็บ เพื่อไม่ให้ระบบซับซ้อนเกินจำเป็น)
+        </p>
+        <ol class="step-list text-sm text-slate-600">
+          <li>เปิด Google Sheet ของระบบ แล้วไปที่แท็บ <code class="font-mono">Users</code></li>
+          <li>เพิ่มหรือแก้ข้อมูลใน 4 คอลัมน์นี้:</li>
+        </ol>
+        <div class="overflow-x-auto mt-2">
+          <table class="w-full text-[13px] border-collapse">
+            <thead>
+              <tr class="bg-slate-100 text-left">
+                <th class="p-2 border border-slate-200 font-mono">username</th>
+                <th class="p-2 border border-slate-200 font-mono">password</th>
+                <th class="p-2 border border-slate-200 font-mono">role</th>
+                <th class="p-2 border border-slate-200 font-mono">is_active</th>
+              </tr>
+            </thead>
+            <tbody class="text-slate-600">
+              <tr>
+                <td class="p-2 border border-slate-200">ชื่อผู้ใช้ ห้ามซ้ำกัน</td>
+                <td class="p-2 border border-slate-200">รหัสผ่าน</td>
+                <td class="p-2 border border-slate-200"><code class="font-mono">admin</code> หรือ <code class="font-mono">staff</code></td>
+                <td class="p-2 border border-slate-200"><code class="font-mono">TRUE</code> = ใช้งานได้<br /><code class="font-mono">FALSE</code> = ปิดบัญชี</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="text-sm text-slate-600 mt-3">
+          บันทึกชีตแล้วค่าใหม่มีผลกับการล็อกอินครั้งถัดไปทันที
+          <strong>การปิดบัญชีให้เปลี่ยน <code class="font-mono">is_active</code> เป็น FALSE ไม่ต้องลบแถวทิ้ง</strong>
+          จะได้ยังรู้ว่าเคยมีใครใช้ระบบบ้าง
+        </p>
+      </section>
+    </div>
+
+    <!-- ================= ส่วนที่ 3 ================= -->
+    <h2 id="s3" class="text-lg font-bold text-white bg-navy-800 rounded-xl px-4 py-2.5 mb-3">
+      ส่วนที่ 3 — วิธีหาพิกัดจาก Google Maps
+    </h2>
+
+    <section class="card p-4 mb-3">
+      <p class="text-sm text-slate-600 mb-4 leading-relaxed">
+        พิกัด (ตัวเลข 2 ชุด เช่น <code class="font-mono">13.736717, 100.523186</code>) ทำให้การนำทางแม่นยำกว่าการใช้ที่อยู่มาก
+        เพราะชี้ไปที่ตัวบ้านโดยตรง มี 3 วิธีให้เลือก ใช้วิธีไหนก็ได้
+      </p>
+
+      <h3 class="font-bold text-navy-800 mb-2">วิธีที่ 1 — คัดลอกลิงก์จากมือถือ (ใช้บ่อยที่สุด)</h3>
+      <ol class="step-list text-sm text-slate-600">
+        <li>เปิดแอป Google Maps บนมือถือ</li>
+        <li><strong>กดค้าง</strong> ที่ตำแหน่งบ้านผู้ป่วยบนแผนที่ จนมีหมุดสีแดงปักขึ้นมา</li>
+        <li>กดปุ่ม <strong>"แชร์"</strong> แล้วเลือก <strong>"คัดลอกลิงก์"</strong></li>
+        <li>กลับมาที่ฟอร์มในระบบ วางลิงก์ในช่อง <strong>"ลิงก์ Google Maps"</strong>
+            แล้วกด <strong>"📍 ดึงพิกัดจากลิงก์"</strong></li>
+        <li>ถ้าสำเร็จจะขึ้นข้อความสีเขียว ✓ พร้อมตัวเลขพิกัดเติมให้ในช่องด้านล่างอัตโนมัติ</li>
+      </ol>
+
+      <hr class="my-4 border-slate-200" />
+
+      <h3 class="font-bold text-navy-800 mb-2">วิธีที่ 2 — คลิกขวาเอาพิกัดตรงๆ บนคอมพิวเตอร์ <span class="text-xs font-normal text-emerald-700">(แม่นที่สุด ไม่มีทางพลาด)</span></h3>
+      <ol class="step-list text-sm text-slate-600">
+        <li>เปิด <code class="font-mono">google.com/maps</code> บนคอมพิวเตอร์</li>
+        <li><strong>คลิกขวา</strong> ที่ตำแหน่งบ้านผู้ป่วยบนแผนที่</li>
+        <li>ในเมนูที่เด้งขึ้นมา <strong>บรรทัดบนสุดคือตัวเลขพิกัด</strong> เช่น
+            <code class="font-mono">13.736717, 100.523186</code></li>
+        <li><strong>คลิกที่ตัวเลขนั้น 1 ครั้ง</strong> ระบบจะคัดลอกให้อัตโนมัติ</li>
+        <li>กลับมาที่ฟอร์ม <strong>วางตัวเลขนั้นลงในช่อง "ลิงก์ Google Maps" ได้เลย</strong>
+            แล้วกด "ดึงพิกัดจากลิงก์" — ระบบรับตัวเลขเปล่าๆ ได้ ไม่จำเป็นต้องเป็นลิงก์
+            (หรือจะพิมพ์แยกใส่ช่อง "ละติจูด" และ "ลองจิจูด" เองก็ได้)</li>
+      </ol>
+      <div class="alert alert-info text-[13px] mt-3 leading-relaxed">
+        ตัวเลข <strong>ชุดแรก</strong> คือ <strong>ละติจูด (lat)</strong> —
+        ตัวเลข <strong>ชุดหลัง</strong> คือ <strong>ลองจิจูด (lng)</strong> ในประเทศไทยละติจูดจะอยู่ราว 5–21
+        และลองจิจูดราว 97–106 ถ้าตัวเลขที่ได้ผิดไปจากนี้มาก แปลว่าอาจสลับช่องกัน
+      </div>
+
+      <hr class="my-4 border-slate-200" />
+
+      <h3 class="font-bold text-navy-800 mb-2">วิธีที่ 3 — ถ้าเจอลิงก์ย่อแล้วดึงพิกัดไม่ได้</h3>
+      <p class="text-sm text-slate-600 mb-3 leading-relaxed">
+        ลิงก์ที่ขึ้นต้นด้วย <code class="font-mono">maps.app.goo.gl</code> หรือ <code class="font-mono">goo.gl/maps</code>
+        เป็น "ลิงก์ย่อ" ซึ่งข้างในไม่มีตัวเลขพิกัดอยู่เลย ระบบจึงดึงออกมาไม่ได้
+        และจะขึ้นข้อความสีเหลืองเตือน วิธีแก้:
+      </p>
+      <ol class="step-list text-sm text-slate-600">
+        <li><strong>กดเปิดลิงก์ย่อนั้นในเบราว์เซอร์ก่อน</strong> (กดที่ลิงก์ตรงๆ ได้เลย)</li>
+        <li>รอให้แผนที่โหลดจนเสร็จ ลิงก์ในช่องที่อยู่เว็บด้านบนจะ<strong>เปลี่ยนเป็นลิงก์ยาว</strong>เอง
+            ซึ่งมีตัวเลขพิกัดอยู่ข้างใน (จะเห็นเครื่องหมาย <code class="font-mono">@</code> ตามด้วยตัวเลข)</li>
+        <li>คัดลอกลิงก์ยาวจากช่องที่อยู่เว็บนั้น มาวางในฟอร์มแทน</li>
+        <li>ถ้ายังไม่ได้อีก ให้ใช้ <strong>วิธีที่ 2 (คลิกขวา)</strong> ซึ่งได้ผลเสมอ</li>
+      </ol>
+      <p class="text-[13px] text-slate-500 mt-3">
+        และถ้าไม่สะดวกหาพิกัดจริงๆ <strong>เว้นว่างไว้ได้</strong> ระบบจะใช้ที่อยู่ที่พิมพ์ไว้นำทางแทน
+        เพียงแต่ความแม่นยำจะลดลง
+      </p>
+    </section>
+
+    <!-- ================= ส่วนที่ 4 ================= -->
+    <h2 id="s4" class="text-lg font-bold text-white bg-navy-800 rounded-xl px-4 py-2.5 mb-3">
+      ส่วนที่ 4 — แก้ปัญหาที่พบบ่อย
+    </h2>
+
+    <section class="card p-4 mb-3">
+      <dl class="text-sm text-slate-600 space-y-3.5">
+        <div>
+          <dt class="font-bold text-navy-800">เข้าระบบไม่ได้ ขึ้นว่าชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง</dt>
+          <dd class="mt-0.5">ตรวจตัวพิมพ์เล็ก-ใหญ่ให้ตรง ตรวจว่าไม่มีเว้นวรรคติดมาตอนคัดลอก
+              และให้ผู้ดูแลระบบตรวจว่าคอลัมน์ <code class="font-mono">is_active</code> ในแท็บ Users เป็น
+              <code class="font-mono">TRUE</code></dd>
+        </div>
+        <div>
+          <dt class="font-bold text-navy-800">ใช้งานอยู่ดีๆ แล้วถูกเด้งกลับหน้าเข้าสู่ระบบ</dt>
+          <dd class="mt-0.5">เป็นเรื่องปกติ เซสชัน (ช่วงเวลาที่ระบบจำว่าเราล็อกอินอยู่) มีอายุจำกัด
+              ล็อกอินใหม่แล้วใช้งานต่อได้เลย ข้อมูลที่บันทึกไปแล้วไม่หาย</dd>
+        </div>
+        <div>
+          <dt class="font-bold text-navy-800">ปุ่มนำทางเป็นสีจาง กดไม่ได้</dt>
+          <dd class="mt-0.5">อ่านข้อความสีเหลืองใต้ปุ่ม จะบอกสาเหตุว่าเป็นเพราะ
+              ผู้ป่วยไม่มีทั้งพิกัดและที่อยู่ หรือยังไม่ได้ตั้งค่าพิกัดเทศบาลในหน้า "ตั้งค่า"</dd>
+        </div>
+        <div>
+          <dt class="font-bold text-navy-800">ดึงพิกัดจากลิงก์ไม่ได้</dt>
+          <dd class="mt-0.5">ส่วนใหญ่เกิดจากลิงก์ย่อ <code class="font-mono">maps.app.goo.gl</code>
+              ดูวิธีแก้ที่ <a href="#s3" class="text-teal-600 font-semibold">ส่วนที่ 3 วิธีที่ 3</a></dd>
+        </div>
+        <div>
+          <dt class="font-bold text-navy-800">หน้าจอขึ้นว่า "โหลดข้อมูลไม่สำเร็จ"</dt>
+          <dd class="mt-0.5">ตรวจสัญญาณอินเทอร์เน็ตก่อน แล้วกดปุ่ม "ลองใหม่อีกครั้ง"
+              ถ้ายังไม่หาย ให้แจ้งผู้ดูแลระบบไปตรวจว่า Apps Script ยัง deploy อยู่หรือไม่</dd>
+        </div>
+        <div>
+          <dt class="font-bold text-navy-800">มีแถบสีเหลืองบอกว่า "โหมดเดโม" ขึ้นด้านบน</dt>
+          <dd class="mt-0.5">แปลว่าเว็บยังไม่ได้เชื่อมกับ Google Sheet ข้อมูลที่เห็นเป็นข้อมูลจำลอง
+              <strong>อย่าใช้บันทึกข้อมูลจริง</strong> ให้แจ้งผู้ดูแลระบบไปใส่ URL ของ Apps Script
+              ในไฟล์ <code class="font-mono">js/api.js</code></dd>
+        </div>
+        <div>
+          <dt class="font-bold text-navy-800">เจ้าหน้าที่มองไม่เห็นเมนูเพิ่ม/แก้ไข/ถังขยะ/ตั้งค่า</dt>
+          <dd class="mt-0.5">ถูกต้องแล้ว ไม่ใช่ข้อผิดพลาด เมนูเหล่านี้สงวนไว้ให้ผู้ดูแลระบบเท่านั้น</dd>
+        </div>
+      </dl>
+    </section>
+
+    <div class="alert alert-warn text-[13px] leading-relaxed">
+      <strong>ข้อควรระวังเรื่องความปลอดภัย:</strong> ระบบนี้จัดทำเพื่อการศึกษาและการสาธิต
+      ระดับความปลอดภัยยังไม่เทียบเท่าระบบที่ใช้งานจริงในหน่วยงาน
+      จึงไม่ควรบันทึกข้อมูลผู้ป่วยจริงลงในระบบ แนะนำให้ใช้ข้อมูลจำลองในการนำเสนอ
+      และไม่ควรเปิดหน้าจอทิ้งไว้โดยไม่ได้ออกจากระบบ
+    </div>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    (function () {
+      if (!Auth.requireLogin()) return;
+      Auth.renderHeader('help.html');
+
+      // เจ้าหน้าที่ (staff) ไม่ต้องเห็นส่วนที่ทำไม่ได้ แต่เปิดอ่านได้ถ้าอยากรู้
+      if (!Auth.isAdmin()) {
+        var box = document.querySelector('.admin-only');
+        if (box) {
+          box.style.opacity = '.75';
+          var note = document.createElement('div');
+          note.className = 'alert alert-info text-[13px] mb-3';
+          note.textContent = 'ส่วนนี้เป็นสิทธิ์ของผู้ดูแลระบบ บัญชีของคุณจะไม่เห็นเมนูเหล่านี้ แต่เปิดอ่านไว้เป็นความรู้ได้';
+          box.insertBefore(note, box.firstChild);
+        }
+      }
+    })();
+  </script>
+</body>
+</html>

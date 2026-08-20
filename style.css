@@ -1,0 +1,222 @@
+/* =========================================================
+   style.css — สไตล์เสริมจาก Tailwind CDN
+   โทนสี: navy (กรมท่า) / teal (เขียวน้ำทะเล) / gold (ทอง)
+   หมายเหตุ: ส่วนใหญ่ใช้ Tailwind CDN ไฟล์นี้เก็บเฉพาะสิ่งที่ Tailwind ทำไม่สะดวก
+   ========================================================= */
+
+:root {
+  --navy-900: #0a1f33;
+  --navy-800: #0f2a44;
+  --navy-700: #1b3b5f;
+  --navy-600: #27527f;
+  --teal-600: #0d8f8c;
+  --teal-500: #14a8a4;
+  --teal-400: #2cc9c4;
+  --gold-600: #b8901f;
+  --gold-500: #d4a72c;
+  --gold-400: #e8c15c;
+  --ink: #10202e;
+  --muted: #5b6b7a;
+  --line: #dbe3ea;
+  --bg: #f4f7fa;
+}
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  font-family: "Sarabun", "Noto Sans Thai", "Segoe UI", system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+}
+
+/* ---- ปุ่มต้องกดง่ายด้วยนิ้ว อย่างน้อย 44px ---- */
+.btn,
+button,
+select,
+input,
+textarea,
+a.btn {
+  min-height: 44px;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  padding: .625rem 1.1rem;
+  border-radius: .75rem;
+  font-weight: 600;
+  line-height: 1.2;
+  transition: transform .06s ease, filter .15s ease, background-color .15s ease;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+.btn:active { transform: translateY(1px); }
+.btn:disabled { opacity: .55; cursor: not-allowed; }
+
+.btn-primary { background: var(--navy-800); color: #fff; }
+.btn-primary:hover { background: var(--navy-700); }
+
+.btn-teal { background: var(--teal-600); color: #fff; }
+.btn-teal:hover { background: var(--teal-500); }
+
+.btn-gold { background: var(--gold-500); color: var(--navy-900); }
+.btn-gold:hover { background: var(--gold-400); }
+
+.btn-ghost { background: #fff; color: var(--navy-800); border-color: var(--line); }
+.btn-ghost:hover { background: #eef3f7; }
+
+.btn-danger { background: #b91c1c; color: #fff; }
+.btn-danger:hover { background: #991b1b; }
+
+/* ---- การ์ด ---- */
+.card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  box-shadow: 0 1px 2px rgba(15, 42, 68, .06), 0 8px 24px -18px rgba(15, 42, 68, .35);
+}
+
+/* ---- ช่องกรอกข้อมูล ---- */
+.field {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: .75rem;
+  padding: .6rem .85rem;
+  background: #fff;
+  font-size: 1rem;
+}
+.field:focus {
+  outline: none;
+  border-color: var(--teal-500);
+  box-shadow: 0 0 0 3px rgba(20, 168, 164, .18);
+}
+.field.is-invalid {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, .14);
+}
+.field-error {
+  color: #dc2626;
+  font-size: .8125rem;
+  margin-top: .25rem;
+  min-height: 1rem;
+}
+.field-label {
+  display: block;
+  font-weight: 600;
+  font-size: .9375rem;
+  margin-bottom: .35rem;
+  color: var(--navy-800);
+}
+.required-star { color: #dc2626; }
+
+/* ---- ป้ายประเภทผู้ป่วย ---- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+  padding: .2rem .65rem;
+  border-radius: 999px;
+  font-size: .8125rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.badge-bedridden { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
+.badge-general   { background: #d9f2f1; color: #0b6f6c; border: 1px solid #7fd6d3; }
+.badge-deleted   { background: #e5e7eb; color: #4b5563; border: 1px solid #cbd5e1; }
+.badge-role      { background: rgba(212, 167, 44, .18); color: var(--gold-600); border: 1px solid rgba(212, 167, 44, .45); }
+
+/* ---- โลโก้ (ไฟล์ static ที่ images/logo.png) ----
+   ไฟล์โลโก้เป็น PNG พื้นหลังทึบ (ไม่โปร่งใส) จึงวางบนกล่องพื้นขาวมุมมน
+   เพื่อให้ขอบภาพดูตั้งใจ ไม่ใช่สี่เหลี่ยมแปลกปลอมบนพื้นกรมท่า
+   ใช้ object-fit: contain เพื่อไม่ให้ภาพถูกบีบผิดสัดส่วน (ต้นฉบับ 386x410 px) */
+.app-logo {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  object-fit: contain;
+  background: #fff;
+  border-radius: .6rem;
+  padding: 2px;
+  border: 1px solid rgba(255, 255, 255, .28);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .18);
+}
+
+/* ขนาดใหญ่สำหรับหน้าเข้าสู่ระบบ ซึ่งโลโก้เป็นภาพหลักกลางจอ ไม่ใช่ไอคอนในแถบเมนู */
+.app-logo-hero {
+  width: 84px;
+  height: 84px;
+  object-fit: contain;
+  background: #fff;
+  border-radius: 1rem;
+  padding: 5px;
+  border: 1px solid rgba(255, 255, 255, .3);
+  box-shadow: 0 6px 20px -8px rgba(0, 0, 0, .5);
+}
+
+/* ---- แถบหัวเว็บ ---- */
+.topbar {
+  background: linear-gradient(135deg, var(--navy-900), var(--navy-700) 65%, var(--navy-600));
+  color: #fff;
+}
+.topbar a.navlink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: .35rem .8rem;
+  border-radius: .6rem;
+  font-weight: 600;
+  color: #dbe7f2;
+}
+.topbar a.navlink:hover { background: rgba(255, 255, 255, .12); color: #fff; }
+.topbar a.navlink.active { background: rgba(212, 167, 44, .22); color: var(--gold-400); }
+
+/* ---- สถานะกำลังโหลด ---- */
+.spinner {
+  width: 28px; height: 28px;
+  border: 3px solid rgba(15, 42, 68, .15);
+  border-top-color: var(--teal-600);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.skeleton {
+  background: linear-gradient(90deg, #e8eef4 25%, #f2f6fa 37%, #e8eef4 63%);
+  background-size: 400% 100%;
+  animation: shimmer 1.3s ease infinite;
+  border-radius: .75rem;
+}
+@keyframes shimmer { 0% { background-position: 100% 0; } 100% { background-position: 0 0; } }
+
+/* ---- กล่องแจ้งเตือน ---- */
+.alert { border-radius: .75rem; padding: .8rem 1rem; font-size: .9375rem; border: 1px solid; }
+.alert-error   { background: #fef2f2; color: #991b1b; border-color: #fecaca; }
+.alert-success { background: #ecfdf5; color: #065f46; border-color: #a7f3d0; }
+.alert-info    { background: #eff6ff; color: #1e40af; border-color: #bfdbfe; }
+.alert-warn    { background: #fffbeb; color: #92400e; border-color: #fde68a; }
+
+/* ---- โหมดเดโม (ยังไม่ได้ต่อ Apps Script) ---- */
+.demo-ribbon {
+  background: repeating-linear-gradient(45deg, rgba(212,167,44,.16), rgba(212,167,44,.16) 12px, rgba(212,167,44,.28) 12px, rgba(212,167,44,.28) 24px);
+  color: #7a5e0d;
+  border-bottom: 1px solid rgba(184, 144, 31, .45);
+}
+
+/* ---- ตัวช่วยเล็กน้อย ---- */
+.hidden-important { display: none !important; }
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+::selection { background: rgba(20, 168, 164, .25); }
+
+/* ---- พิมพ์เอกสาร (หน้ารายละเอียดผู้ป่วย) ---- */
+@media print {
+  .no-print { display: none !important; }
+  body { background: #fff; }
+  .card { box-shadow: none; border-color: #999; }
+}

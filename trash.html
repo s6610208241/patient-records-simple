@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ถังขยะ | ระบบประวัติผู้ป่วยเทศบาล</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { colors: {
+      navy: { 900: '#0a1f33', 800: '#0f2a44', 700: '#1b3b5f', 600: '#27527f' },
+      teal: { 600: '#0d8f8c', 500: '#14a8a4', 400: '#2cc9c4' },
+      gold: { 600: '#b8901f', 500: '#d4a72c', 400: '#e8c15c' }
+    } } } };
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div id="app-header"></div>
+
+  <main class="max-w-3xl mx-auto px-3 sm:px-4 py-4 pb-24">
+
+    <h1 class="text-xl font-bold text-navy-800">ถังขยะ</h1>
+    <p class="text-sm text-slate-600 mt-1 mb-4">
+      รายชื่อผู้ป่วยที่ถูกลบ ข้อมูลยังอยู่ในระบบและกู้คืนได้ตลอดเวลา (ระบบนี้ไม่ลบข้อมูลออกจากฐานข้อมูลจริง)
+    </p>
+
+    <div id="trash-message" class="alert alert-success mb-3 hidden"></div>
+
+    <div id="state-loading" class="space-y-3">
+      <div class="skeleton h-24"></div>
+      <div class="skeleton h-24"></div>
+    </div>
+
+    <div id="state-error" class="card p-6 text-center hidden">
+      <div class="text-4xl mb-2">⚠️</div>
+      <h2 class="font-bold text-navy-800 mb-1">โหลดข้อมูลไม่สำเร็จ</h2>
+      <p id="state-error-text" class="text-sm text-slate-600 mb-4"></p>
+      <button type="button" id="btn-retry" class="btn btn-primary">ลองใหม่อีกครั้ง</button>
+    </div>
+
+    <div id="state-empty" class="card p-8 text-center hidden">
+      <div class="text-4xl mb-2">🗑️</div>
+      <h2 class="font-bold text-navy-800 mb-1">ถังขยะว่างเปล่า</h2>
+      <p class="text-sm text-slate-600">ยังไม่มีข้อมูลผู้ป่วยที่ถูกลบ</p>
+    </div>
+
+    <div id="trash-list" class="grid gap-3 hidden"></div>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    (function () {
+      if (!Auth.requireLogin('admin')) return;
+      Auth.renderHeader('trash.html');
+
+      var $ = function (x) { return document.getElementById(x); };
+
+      function showState(state) {
+        ['state-loading', 'state-error', 'state-empty', 'trash-list'].forEach(function (id) {
+          $(id).classList.toggle('hidden', id !== state);
+        });
+      }
+
+      async function load() {
+        showState('state-loading');
+        var res = await Api.listPatients({ includeDeleted: true });
+        if (!res.ok) {
+          $('state-error-text').textContent = res.error;
+          showState('state-error');
+          return;
+        }
+        var rows = (res.data || []).filter(function (p) { return !!p.deleted_at; });
+        if (rows.length === 0) { showState('state-empty'); return; }
+
+        rows.sort(function (a, b) { return String(b.deleted_at).localeCompare(String(a.deleted_at)); });
+
+        $('trash-list').innerHTML = rows.map(function (p) {
+          return '' +
+            '<div class="card p-4 flex flex-col sm:flex-row sm:items-center gap-3">' +
+              '<div class="min-w-0 flex-1">' +
+                '<div class="flex items-center gap-2 flex-wrap">' +
+                  '<span class="font-bold text-navy-800">' + escapeHtml((p.first_name || '') + ' ' + (p.last_name || '')) + '</span>' +
+                  patientTypeBadge(p.patient_type) +
+                '</div>' +
+                '<div class="text-xs text-slate-500 font-mono mt-0.5">' + escapeHtml(p.patient_code) + '</div>' +
+                '<div class="text-sm text-slate-600 mt-1 line-clamp-2">📍 ' + escapeHtml(p.address_text || '-') + '</div>' +
+                '<div class="text-xs text-slate-400 mt-1">ลบเมื่อ ' + formatThaiDateTime(p.deleted_at) + '</div>' +
+              '</div>' +
+              '<button type="button" class="btn btn-teal shrink-0 text-sm" data-restore="' + escapeHtml(p.patient_code) + '">↩️ กู้คืน</button>' +
+            '</div>';
+        }).join('');
+
+        $('trash-list').querySelectorAll('[data-restore]').forEach(function (btn) {
+          btn.addEventListener('click', function () { restore(btn.getAttribute('data-restore'), btn); });
+        });
+
+        showState('trash-list');
+      }
+
+      async function restore(code, btn) {
+        btn.disabled = true;
+        btn.textContent = 'กำลังกู้คืน…';
+        var res = await Api.restorePatient(code);
+        if (!res.ok) {
+          btn.disabled = false;
+          btn.textContent = '↩️ กู้คืน';
+          $('trash-message').className = 'alert alert-error mb-3';
+          $('trash-message').textContent = 'กู้คืนไม่สำเร็จ: ' + res.error;
+          $('trash-message').classList.remove('hidden');
+          return;
+        }
+        $('trash-message').className = 'alert alert-success mb-3';
+        $('trash-message').textContent = 'กู้คืนข้อมูล ' + code + ' เรียบร้อยแล้ว กลับไปดูได้ที่หน้ารายชื่อผู้ป่วย';
+        $('trash-message').classList.remove('hidden');
+        load();
+      }
+
+      $('btn-retry').addEventListener('click', load);
+      load();
+    })();
+  </script>
+</body>
+</html>

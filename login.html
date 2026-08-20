@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>เข้าสู่ระบบ | ระบบประวัติผู้ป่วยเทศบาล</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: { colors: {
+      navy: { 900: '#0a1f33', 800: '#0f2a44', 700: '#1b3b5f', 600: '#27527f' },
+      teal: { 600: '#0d8f8c', 500: '#14a8a4', 400: '#2cc9c4' },
+      gold: { 600: '#b8901f', 500: '#d4a72c', 400: '#e8c15c' }
+    } } } };
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="min-h-screen flex flex-col" style="background: linear-gradient(160deg, #0a1f33 0%, #1b3b5f 55%, #0d8f8c 140%);">
+
+  <main class="flex-1 flex items-center justify-center p-4">
+    <div class="w-full max-w-sm">
+
+      <!-- โลโก้ + ชื่อระบบ -->
+      <div class="text-center mb-6">
+        <img src="images/logo.png" alt="ตราสัญลักษณ์เทศบาล" class="app-logo-hero mx-auto block" />
+        <h1 id="system-name" class="mt-3 text-xl font-bold text-white leading-snug">กำลังโหลด…</h1>
+        <p class="text-sm text-slate-300 mt-1">ระบบจัดเก็บและค้นหาประวัติผู้ป่วยในเขตเทศบาล</p>
+      </div>
+
+      <!-- กล่องล็อกอิน -->
+      <div class="card p-5 sm:p-6">
+        <h2 class="text-lg font-bold text-navy-800 mb-4">เข้าสู่ระบบ</h2>
+
+        <div id="login-error" class="alert alert-error mb-4 hidden"></div>
+
+        <form id="login-form" novalidate>
+          <div class="mb-3">
+            <label class="field-label" for="username">ชื่อผู้ใช้ <span class="required-star">*</span></label>
+            <input id="username" name="username" type="text" class="field" autocomplete="username"
+                   inputmode="text" placeholder="เช่น admin" autofocus />
+            <div id="err-username" class="field-error"></div>
+          </div>
+
+          <div class="mb-2">
+            <label class="field-label" for="password">รหัสผ่าน <span class="required-star">*</span></label>
+            <div class="relative">
+              <input id="password" name="password" type="password" class="field pr-24" autocomplete="current-password"
+                     placeholder="กรอกรหัสผ่าน" />
+              <button type="button" id="btn-toggle-pw"
+                      class="absolute right-1.5 top-1/2 -translate-y-1/2 text-sm font-semibold text-teal-600 px-3 py-2 rounded-lg hover:bg-slate-100">
+                แสดง
+              </button>
+            </div>
+            <div id="err-password" class="field-error"></div>
+          </div>
+
+          <button type="submit" id="btn-login" class="btn btn-primary w-full mt-3">
+            <span id="btn-login-text">เข้าสู่ระบบ</span>
+          </button>
+        </form>
+
+        <!-- ป้ายบอกว่ายังเป็นโหมดเดโม -->
+        <div id="demo-note" class="alert alert-warn mt-4 text-[13px] leading-relaxed hidden">
+          <strong>โหมดเดโม</strong> — ยังไม่ได้เชื่อมต่อ Google Sheet<br />
+          ทดลองเข้าระบบด้วย<br />
+          • ผู้ดูแลระบบ: <code class="font-mono font-bold">admin</code> / <code class="font-mono font-bold">1234</code><br />
+          • เจ้าหน้าที่: <code class="font-mono font-bold">staff</code> / <code class="font-mono font-bold">1234</code>
+        </div>
+      </div>
+
+      <p class="text-center text-xs text-slate-400 mt-5 leading-relaxed">
+        ระบบนี้จัดทำเพื่อการศึกษา/สาธิต<br />ไม่ควรบันทึกข้อมูลผู้ป่วยจริงลงในระบบ
+      </p>
+    </div>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    (function () {
+      // ถ้าล็อกอินอยู่แล้ว ให้ข้ามไปหน้ารายการเลย
+      if (Auth.isLoggedIn()) {
+        window.location.replace('index.html');
+        return;
+      }
+
+      if (IS_DEMO) document.getElementById('demo-note').classList.remove('hidden');
+
+      // ชื่อระบบอ่านจาก Settings เสมอ (ห้าม hardcode)
+      Api.getSettings().then(function (res) {
+        document.getElementById('system-name').textContent =
+          (res.ok && res.data && res.data.system_name) ? res.data.system_name : 'ระบบประวัติผู้ป่วยเทศบาล';
+      });
+
+      var form = document.getElementById('login-form');
+      var errBox = document.getElementById('login-error');
+      var btn = document.getElementById('btn-login');
+      var btnText = document.getElementById('btn-login-text');
+      var pw = document.getElementById('password');
+
+      document.getElementById('btn-toggle-pw').addEventListener('click', function () {
+        var show = pw.type === 'password';
+        pw.type = show ? 'text' : 'password';
+        this.textContent = show ? 'ซ่อน' : 'แสดง';
+      });
+
+      function clearErrors() {
+        errBox.classList.add('hidden');
+        ['username', 'password'].forEach(function (n) {
+          document.getElementById(n).classList.remove('is-invalid');
+          document.getElementById('err-' + n).textContent = '';
+        });
+      }
+
+      form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        clearErrors();
+
+        var username = document.getElementById('username').value.trim();
+        var password = pw.value;
+        var bad = false;
+
+        if (!username) {
+          document.getElementById('username').classList.add('is-invalid');
+          document.getElementById('err-username').textContent = 'กรุณากรอกชื่อผู้ใช้';
+          bad = true;
+        }
+        if (!password) {
+          pw.classList.add('is-invalid');
+          document.getElementById('err-password').textContent = 'กรุณากรอกรหัสผ่าน';
+          bad = true;
+        }
+        if (bad) return;
+
+        btn.disabled = true;
+        btnText.textContent = 'กำลังตรวจสอบ…';
+
+        var res = await Auth.login(username, password);
+
+        btn.disabled = false;
+        btnText.textContent = 'เข้าสู่ระบบ';
+
+        if (!res.ok) {
+          errBox.textContent = res.error;
+          errBox.classList.remove('hidden');
+          pw.value = '';
+          pw.focus();
+          return;
+        }
+
+        // กลับไปหน้าที่ผู้ใช้ตั้งใจจะเข้าก่อนถูกเด้งมาล็อกอิน
+        var next = new URLSearchParams(window.location.search).get('next');
+        var safeNext = next && /^[a-zA-Z0-9._-]+\.html(\?[^"'<>]*)?$/.test(next) ? next : 'index.html';
+        window.location.replace(safeNext);
+      });
+    })();
+  </script>
+</body>
+</html>
